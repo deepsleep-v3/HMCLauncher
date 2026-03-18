@@ -2,13 +2,15 @@ name: Build
 
 on:
   push:
-  pull_request:
+    tags:
+      - '*' 
 
 jobs:
   build:
     runs-on: windows-2022
     permissions:
         contents: write
+        packages: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
