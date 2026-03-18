@@ -1,6 +1,6 @@
 /*
  * Hello Minecraft! Launcher
- * Copyright (C) 2025 huangyuhui <huanghongxun2008@126.com> and contributors
+ * Copyright (C) 2026 huangyuhui <huanghongxun2008@126.com> and contributors  |  Copyright (C) 2026 deepsleep-v3 <wontfix@hotmail.com> and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,38 +27,11 @@ plugins {
     id("org.glavo.load-maven-publish-properties") version "0.1.0"
 }
 
-group = "org.glavo.hmcl"
+group = "io.github.deepsleep-v3.hmclplusplus"
 version = project.findProperty("version") ?: throw GradleException("Version not specified")
 description = "HMCLauncher for Windows"
 
 val downloadDir = layout.buildDirectory.dir("downloads")
-
-val downloadVerifyFile by tasks.registering(de.undercouch.gradle.tasks.download.Download::class) {
-    src("https://github.com/HMCL-dev/HMCLauncher/releases/download/$version/HMCLauncher.exe.sha256")
-    dest(downloadDir.map { it.file("HMCLauncher-$version.exe.sha256") })
-    overwrite(false)
-}
-
-val downloadLauncher by tasks.registering(de.undercouch.gradle.tasks.download.Download::class) {
-    src("https://github.com/HMCL-dev/HMCLauncher/releases/download/$version/HMCLauncher.exe")
-    dest(downloadDir.map { it.file("HMCLauncher-$version.exe") })
-    overwrite(false)
-}
-
-val verifyLauncher by tasks.registering {
-    dependsOn(downloadLauncher, downloadVerifyFile)
-
-    doLast {
-        val expectedChecksum = downloadVerifyFile.get().outputFiles.single().readText().trim()
-        val actualChecksum = downloadLauncher.get().outputFiles.single().readBytes().let { bytes ->
-            MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
-        }
-
-        if (!expectedChecksum.equals(actualChecksum, true)) {
-            throw GradleException("Checksum verification failed: expected $expectedChecksum, got $actualChecksum")
-        }
-    }
-}
 
 tasks.processResources {
     dependsOn(downloadLauncher, verifyLauncher)
@@ -87,7 +60,7 @@ publishing {
             pom {
                 name.set(project.name)
                 description.set(project.description)
-                url.set("https://github.com/HMCL-dev/HMCLauncher")
+                url.set("https://github.com/deepsleep-v3/HMCLauncher/")
                 licenses {
                     license {
                         name.set("GPL 3.0")
@@ -106,9 +79,14 @@ publishing {
                         name.set("Glavo")
                         email.set("zjx001202@gmail.com")
                     }
+                    developer {
+                        id.set("deepsleep-v3")
+                        name.set("deepsleep-v3")
+                        email.set("wontfix@hotmail.com")
+                    }
                 }
                 scm {
-                    url.set("https://github.com/HMCL-dev/HMCLauncher")
+                    url.set("https://github.com/deepsleep-v3/HMCLauncher")
                 }
             }
         }
